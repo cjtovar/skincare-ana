@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos Skincare</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif; /* Puedes cambiar la fuente si quieres */
+            margin: 0; /* Eliminar margen por defecto del body */
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #fce4ec; /* Rosa muy claro */
+            color: #424242; /* Gris oscuro suave */
+        }
+
+        h1 {
+            text-align: center;
+            color: #880e4f; /* Un tono de rosa/púrpura más oscuro */
+            margin-top: 0;
+            margin-bottom: 40px; /* Más espacio debajo del título */
+            font-size: 2.5em; /* Título un poco más grande */
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        /* --- Grid Layout for Products --- */
+        /* Este contenedor envuelve todas las tarjetas de producto para organizarlas en una cuadrícula */
+        .products-grid {
+            display: grid;
+            gap: 25px; /* Espacio entre las tarjetas de producto */
+            /*
+            Usamos grid-template-columns con repeat(auto-fit, minmax(ANCHO_MINIMO, 1fr))
+            'auto-fit' crea tantas columnas como quepan.
+            'minmax(ANCHO_MINIMO, 1fr)' dice que cada columna debe tener un ancho mínimo de ANCHO_MINIMO
+            (ahora aumentado para menos productos por fila) y un máximo de 1fr (ocupa 1 parte del espacio disponible).
+            Esto hace que las columnas se ajusten automáticamente y distribuyan el espacio.
+            */
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); /* Aumentado ancho mínimo */
+        }
+
+        /* Solo necesitamos un media query para pantallas muy pequeñas donde se apilan */
+        @media (max-width: 575px) { /* Pantallas pequeñas (ej: móviles) */
+            .products-grid {
+                grid-template-columns: repeat(1, 1fr); /* 1 columna (se apilan) */
+                gap: 15px; /* Espacio más pequeño al apilar */
+            }
+        }
+        /* --- End Grid Layout --- */
+
+
+        /* --- Product Card Styling --- */
+        .product {
+            background-color: #ffffff; /* Fondo blanco para la tarjeta del producto */
+            border: 1px solid #f8bbd0; /* Borde rosa claro */
+            padding: 20px; /* Más padding interno */
+            border-radius: 10px; /* Bordes más redondeados */
+            display: flex; /* Sigue usando flex para la disposición interna (imagen + info) */
+            align-items: center; /* Centrar verticalmente imagen y texto dentro de la tarjeta */
+            gap: 30px; /* Aumentado el espacio entre imagen y el bloque de info */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Animación suave */
+            height: 100%; /* Hace que las tarjetas en el grid llenen la altura de su celda */
+            box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+        }
+
+        .product:hover {
+            transform: translateY(-5px); /* Efecto de levantar al pasar el ratón */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Estilo para productos NO disponibles (clase 'unavailable') */
+        .product.unavailable {
+            border-color: #e0e0e0; /* Borde gris */
+            opacity: 0.7; /* Ligeramente transparente */
+            background-color: #f5f5f5; /* Fondo gris claro */
+            box-shadow: none;
+            /* Puedes añadir más estilos aquí si quieres, como texto en gris, etc. */
+        }
+         .product.unavailable:hover {
+             transform: none; /* Desactivar el efecto hover si no está disponible */
+             box-shadow: none;
+         }
+
+
+        .product img {
+            max-width: 150px; /* Aumentado el tamaño máximo */
+            height: auto;
+            border-radius: 8px; /* Bordes de imagen redondeados */
+            object-fit: cover;
+            border: 2px solid #e1bee7; /* Borde morado suave alrededor de la imagen */
+            padding: 5px;
+            display: block;
+            flex-shrink: 0; /* Evita que la imagen se encoja si el texto es largo */
+        }
+
+         /* Estilo para el recuadro placeholder si aún no tienes la imagen */
+         .placeholder-img {
+            width: 150px; /* Coincide con el tamaño de img */
+            height: 150px; /* Coincide con el tamaño de img */
+            background-color: #f3e5f5; /* Morado muy claro */
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ab47cc; /* Morado medio */
+            font-size: 0.9em;
+            text-align: center;
+            border: 2px solid #e1bee7;
+            padding: 5px;
+            flex-shrink: 0;
+        }
+
+        .product-info {
+            flex-grow: 1; /* Permite que el bloque de información ocupe el espacio restante */
+            /* Usa flexbox internamente para apilar elementos de info si es necesario en móviles */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product h2 {
+            margin-top: 0;
+            margin-bottom: 5px; /* Espacio debajo del nombre del producto */
+            color: #e91e63; /* Un rosa más vibrante */
+            font-size: 1.3em; /* Tamaño ajustado para la cuadrícula */
+            font-weight: bold;
+        }
+
+        .product .price {
+            font-weight: bold;
+            color: #4caf50; /* Un verde suave */
+            margin-bottom: 8px; /* Espacio debajo del precio */
+            font-size: 1.1em; /* Tamaño ajustado */
+        }
+
+        /* Estilo para el estado del stock */
+        .stock-status {
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .stock-status.in-stock {
+            color: #4CAF50; /* Verde para disponible */
+        }
+
+        .stock-status.out-of-stock {
+            color: #f44336; /* Rojo para agotado */
+        }
+
+
+        .product .description {
+            margin-bottom: 12px; /* Espacio debajo de la descripción */
+            color: #555;
+            font-size: 0.95em; /* Tamaño ligeramente más pequeño para la descripción */
+        }
+
+        .product .video-link a {
+            color: #9c27b0; /* Un morado */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .product .video-link a:hover {
+            text-decoration: underline;
+            color: #7b1fa2; /* Morado un poco más oscuro al pasar el ratón */
+        }
+
+        /* Ajustes responsivos para la disposición interna del producto en pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .product {
+                flex-direction: column; /* Apilar imagen e info verticalmente */
+                align-items: center;
+                gap: 15px; /* Espacio más pequeño al apilar */
+            }
+             .product img, .placeholder-img {
+                width: 100px; /* Imágenes un poco más pequeñas en pantallas muy pequeñas */
+                height: 100px;
+                max-width: 100px; /* Asegurar que el tamaño máximo también se limita */
+            }
+             .product-info {
+                 align-items: center; /* Centrar los elementos de texto cuando están apilados */
+                 text-align: center;
+             }
+             /* Asegurar que el texto está centrado y ajustar márgenes cuando está apilado */
+             .product h2, .product .price, .stock-status, .product .description, .product .video-link {
+                 text-align: center;
+                 margin-bottom: 5px;
+             }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Nuestro Catálogo de Productos Skincare</h1>
+
+    <div class="products-grid">
+
+        <div class="product available">
+            <div class="placeholder-img">Imagen aquí (150x150)</div>
+            <div class="product-info">
+                <h2>Purito Mighty Bamboo Panthenol Cream</h2>
+                <p class="price">Precio: $14,90</p>
+                <p class="stock-status in-stock">Disponible (Stock: 2)</p>
+                <p class="description">Se trata de una crema que restaura la barrera cutanea, especialmente en personas que sufren de acné y tienen la barrera de la piel alterada</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DHB49hgJtEM/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+        <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+            <div class="product-info">
+                <h2>Purito Wonder Releaf Centella Serum Unscented</h2>
+                <p class="price">Precio: $23,00</p>
+                 <p class="stock-status in-stock">Disponible (Stock: 2)</p> <p class="description">Es un tonico que calma la piel luego de cualquier irritacion generada por acné, granos, depilación. Ideal para pieles delicadas</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DFqCXR1uU0J/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+        <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+             <div class="product-info">
+                <h2>Abib Heartleaf Spot Pad</h2>
+                <p class="price">Precio: $20,50</p>
+                 <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Son pads humedos en una solucion que ayuda a controlar el acné. Puedes usarlos como aplicando un toner o tambien puedes usarlos como una máscara cerca de unos 5 minutos.</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.tiktok.com/@nellypotencianoa/video/7415749325944311046?is_from_webapp=1&sender_device=pc&web_id=7462577726832281119" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+        <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+             <div class="product-info">
+                <h2>Abib Heartleaf Teca Capsule Serum</h2>
+                <p class="price">Precio: $22,98</p>
+                 <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es el serum complementario a los pads Abib Heartleaf (el producto anterior). Puedes usarlo solo o con los pads. En poco tiempo podrás ver los resultados</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.tiktok.com/@veralmakeup/video/7482974062377995526?is_from_webapp=1&sender_device=pc&web_id=7462577726832281119" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+        <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+             <div class="product-info">
+                <h2>VT Cosmetics Cica Reti-A Essence 0.1</h2>
+                <p class="price">Precio: $20,15</p>
+                 <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es un serum cremoso de retinol al 0.1%. Es un producto que te ayuda a renovar la piel y generar piel nueva en caso de que sufras de manchas de la edad o de acné, lineas de expresion, entre otras cosas. Puedes usarlo solo o con el Cica A Reedle Shot para mejores resutados.</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DHO3r_4JpKz/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+        <div class="product unavailable"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+             <div class="product-info">
+                <h2>VT Cosmetics Cica Reti-A Reedle Shot 100</h2>
+                <p class="price">Precio: $48,00</p>
+                 <p class="stock-status out-of-stock">Agotado (Stock: 0)</p> <p class="description">Es un producto que funciona con tecnología de microagujas. Este debe aplicarse antes de cualquier producto de skincare, especialmente de noche. Puedes aplicarlo todas las noches sin problemas</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DHO3r_4JpKz/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+        <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+             <div class="product-info">
+                <h2>VT Cosmetics Cica Reedle Shot 700</h2>
+                <p class="price">Precio: $30,00</p>
+                 <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es un producto que funciona con tecnología de microagujas. Este debe aplicarse antes de cualquier producto de skincare, especialmente de noche. A diferencia del Cica Reedle Shot 100, este debe aplicarse 1 o 2 veces por semana ya que es más intenso que el producto anterior.</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.tiktok.com/@kenziespicy/video/7439922890180594990?is_from_webapp=1&sender_device=pc&web_id=7462577726832281119" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+        <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+             <div class="product-info">
+                <h2>Anua Niacinamide 10% + TXA 4%</h2>
+                <p class="price">Precio: $22,00</p>
+                 <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es niacinamida al 10%. La niacinamita te ayuda a reducir los poros en caso de que tengas piel grasa o mixta. Tambien ayuda a aclarar manchas en la piel. Es compatible casi con cualquier producto de skincare.</p>
+                <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DIHwkSqO3KK/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+            </div>
+        </div>
+
+         <div class="product unavailable"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+             <div class="product-info">
+                <h2>VT Cosmetics Glucamune Cream</h2>
+                <p class="price">Precio: $24,00</p>
+                 <p class="stock-status out-of-stock">Agotado (Stock: 0)</p> <p class="description">Es una crema que ofrece un 111% más de hidratación que el ácido hialurónico para una piel profundamente hidratada. Reduce rápidamente la irritación y calma el enrojecimiento, proporcionando un alivio rápido a la piel sensible y estresada. Hipoalergénica, sin fragancia y formulada sin parabenos ni productos químicos nocivos; ideal para pieles reactivas y fácilmente irritadas.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DHO3r_4JpKz/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Biodance Bio Collagen Real Deep Mask</h2>
+            <p class="price">Precio: $5,00</p>
+             <p class="stock-status in-stock">Disponible (Stock: 3)</p> <p class="description">Mascarilla de velo. El ácido oligo-hialurónico de la mascarilla profunda BIODANCE Bio-Collagen Real proporciona efectos hidratantes superiores en comparación con el ácido hialurónico regular. Hidrata rápidamente la superficie de la piel y penetra en capas más profundas, dejando la tez sana y bien hidratada. Puedes usarla entre 15-20 minutos, hasta un maximo de 3 horas.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.tiktok.com/@honeyskincare.ec/video/7432813068716969221?is_from_webapp=1&sender_device=pc&web_id=7462577726832281119" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Tocobo Vita Glazed Lip Mask</h2>
+            <p class="price">Precio: $12,80</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es una mascarilla de labios que ayuda a humectar los labios resecos. Contiene aceite de oliva para una humectacion profunda y tiene un rico aroma.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DHMM0I5JbN9/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Torriden Balanceful Serum</h2>
+            <p class="price">Precio: $25,00</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es un refrescante suero facial sobrealimentado con concentrado de Centella Asiática, que proporciona hidratación instantánea, calmante y exfoliante suave. Perfecto para pieles sensibles, grasas, mixtas y propensas al acné.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DIKClHvJTK5/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+     <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Pyungkang Yul ATD Cream Blue Label</h2>
+            <p class="price">Precio: $17,00</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es una crema humectante con una textura que te brinda una humectación profunda y por mayor tiempo. Puedes usarla durante el día o la noche según tus requerimientos. Ideal para pieles secas y normales.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DIHwkSqO3KK/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Derma:B Everyday Sunblock</h2>
+            <p class="price">Precio: $17,90</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Con la fuerte protección UV de SPF50+ PA ++++, puede disfrutar de actividades al aire libre de forma segura. Este protector solar tiene una textura ligera y refrescante similar a una loción sin pegajosidad. El aroma verde y sándalo te rodea con frescura natural y el gran tamaño te permite utilizar este protector solar no solo para la cara, sino también para el cuerpo</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DIHwkSqO3KK/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Anua Heartleaf LHA Moisture Peeling Gel</h2>
+            <p class="price">Precio: $14,89</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es un exfoliante que, al contacto con la piel, crea granulos para que te hagas una exfoliacion gentil en tu rostro. Ideal para todo tipo de piel.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DIHwkSqO3KK/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+     <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Dermala Do Your TONE Thing</h2>
+            <p class="price">Precio: $21,00</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es un toner que regula el microbioma de tu piel. En las pieles con acné, este microbioma se encuentra alterado, lo que hace que se sigan generando más y más brotes de acné. No tiene olor y es una solucion que te asegura que tengas menos brotes de acné en el corto-mediano plazo.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.tiktok.com/@dermalainc/video/7097410128340585771?is_from_webapp=1&sender_device=pc&web_id=7462577726832281119" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>FRANKLY Closer Serum</h2>
+            <p class="price">Precio: $13,00</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Es un serum que te ayuda a reducir los poros al mismo tiempo que siaviza tu piel. La adenosina y el colágeno ayudan a reducir los signos del envejecimiento, calmar, reparar la piel y fortalecer la barrera cutánea. PHA actúa como un exfoliante suave promoviendo la textura perfecta. de la piel.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DJCaAYBvMbR/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>Heimish Hyaluronic Acid Serum 2%</h2>
+            <p class="price">Precio: $15,00</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Contiene ocho formas de ácido hialurónico que actúan en diferentes capas de la piel, brindando hidratación instantánea y prolongada. Un sérum ligero y no pegajoso que mejora visiblemente la barrera de hidratación de la piel, dejándola más suave y lisa. El ácido hialurónico retiene hasta 1000 veces su peso en agua, proporcionando una hidratación inmediata y mejorando la capacidad de retención de humedad de la piel.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.instagram.com/reel/DI6vZLhOvZC/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    <div class="product available"> <div class="placeholder-img">Imagen aquí (150x150)</div>
+         <div class="product-info">
+            <h2>PURITO Hydro Wave Deep Sea Serum</h2>
+            <p class="price">Precio: $15,95</p>
+             <p class="stock-status in-stock">Disponible (Stock: 1)</p> <p class="description">Su fórmula ligera y no pegajosa ofrece una inundación de hidratación rica en minerales que deja la piel radiante y apagada. Este serum no graso es un alivio de hidratación perfecto para aquellos con piel grasa y mixta.</p>
+            <p class="video-link">Ver cómo se usa: <a href="https://www.tiktok.com/@liswarmy/video/7390299461181902085?is_from_webapp=1&sender_device=pc&web_id=7462577726832281119" target="_blank">Video</a></p>
+        </div>
+    </div>
+
+    </div> </body>
+</html>
