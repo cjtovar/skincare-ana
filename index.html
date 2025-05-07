@@ -188,6 +188,89 @@
                  margin-bottom: 5px;
              }
         }
+
+        /* Estilo para el contenedor del texto introductorio */
+.intro-text {
+    background-color: #ffebee; /* Un rosa muy pálido como fondo */
+    padding: 25px; /* Espacio alrededor del texto dentro del recuadro */
+    margin-bottom: 30px; /* Espacio entre este bloque y el título H1 */
+    border-radius: 8px; /* Bordes ligeramente redondeados */
+    border: 1px solid #ffcdd2; /* Un borde rosa aún más claro */
+    line-height: 1.8; /* Aumentar el espacio entre líneas para mejor lectura */
+    color: #4e342e; /* Un color marrón oscuro suave para el texto */
+    max-width: 800px; /* Limitar el ancho máximo para que no sea demasiado ancho en pantallas grandes */
+    margin-left: auto; /* Centrar el bloque si su ancho es menor que el de la pantalla */
+    margin-right: auto; /* Centrar el bloque */
+}
+
+.intro-text p {
+    margin-bottom: 15px; /* Espacio entre párrafos dentro de la intro */
+}
+
+.intro-text ul {
+    list-style: none; /* Remover los puntos por defecto de la lista */
+    padding: 0; /* Remover el padding por defecto de la lista */
+    margin-bottom: 15px; /* Espacio debajo de la lista */
+}
+
+.intro-text li {
+    margin-bottom: 8px; /* Espacio entre cada elemento de la lista */
+    padding-left: 20px; /* Dejar espacio a la izquierda para la viñeta personalizada */
+    position: relative; /* Necesario para posicionar la viñeta ::before */
+}
+
+/* Estilo para añadir una viñeta personalizada a los elementos de la lista */
+.intro-text li::before {
+    content: '•'; /* Puedes cambiar el contenido, por ejemplo '➤' o dejar vacío y usar background-image */
+    color: #e91e63; /* Usar el color rosa vibrante para la viñeta */
+    font-weight: bold;
+    display: inline-block;
+    width: 1em; /* Ancho de la viñeta */
+    margin-left: -1em; /* Margen negativo para que ocupe el espacio del padding-left */
+    position: absolute; /* Posicionar la viñeta de forma absoluta */
+    left: 0; /* Alinear la viñeta al inicio del padding-left */
+}
+
+
+/* Estilo para los enlaces dentro del texto introductorio */
+.intro-text a {
+    color: #9c27b0; /* Usar un color morado para los enlaces, similar al de los videos */
+    text-decoration: none; /* Sin subrayado por defecto */
+    font-weight: bold; /* Hacer los enlaces un poco más audaces */
+    transition: color 0.3s ease; /* Transición suave al pasar el ratón */
+}
+
+.intro-text a:hover {
+    text-decoration: underline; /* Subrayar al pasar el ratón */
+    color: #7b1fa2; /* Un tono de morado un poco más oscuro al pasar el ratón */
+}
+
+/* Estilo para el texto importante (etiqueta strong) */
+.intro-text strong {
+    color: #d81b60; /* Usar un color rosa más oscuro para resaltar */
+}
+
+/* Estilo para la línea separadora horizontal */
+hr {
+    border: none; /* Remover el borde por defecto */
+    height: 1px; /* Altura de la línea */
+    background-color: #f48fb1; /* Usar un color rosa medio para la línea */
+    margin: 40px auto; /* Margen superior e inferior de 40px, 'auto' para centrarla */
+    width: 80%; /* La línea ocupará el 80% del ancho del contenedor padre (body) */
+    max-width: 600px; /* Opcional: limitar el ancho máximo de la línea */
+}
+
+/* Ajustes responsivos para el intro-text en pantallas pequeñas */
+@media (max-width: 600px) {
+    .intro-text {
+        padding: 15px; /* Reducir padding en pantallas pequeñas */
+        margin-bottom: 20px; /* Reducir margen inferior */
+    }
+    hr {
+        margin: 20px auto; /* Reducir margen de la línea */
+        width: 90%; /* Aumentar el ancho de la línea un poco en pantallas pequeñas */
+    }
+}
     </style>
 </head>
 <body>
